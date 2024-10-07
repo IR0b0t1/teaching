@@ -46,16 +46,16 @@
   </div>
 
   <div class="sliders">
-    <label>Red</label>
+    <p>Red</p>
     <input type="range" min="0" max="255" bind:value={colorRed} />
 
-    <label>Green</label>
+    <p>Green</p>
     <input type="range" min="0" max="255" bind:value={colorGreen} />
 
-    <label>Blue</label>
+    <p>Blue</p>
     <input type="range" min="0" max="255" bind:value={colorBlue} />
 
-    <label>Brightness</label>
+    <p>Brightness</p>
     <input type="range" min="0" max="1" step="0.01" bind:value={brightness} />
 
     <button on:click={toggleFormat} class="toggle-btn">
@@ -93,7 +93,7 @@
     justify-content: center;
   }
 
-  label {
+  p {
     margin-bottom: 8px;
     font-size: 1.2rem;
   }
