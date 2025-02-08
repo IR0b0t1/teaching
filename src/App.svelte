@@ -12,6 +12,3 @@
 </main>
 
 <Footer />
-
-<style>
-</style>
