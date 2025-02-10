@@ -1,25 +1,62 @@
 <script>
   import { push } from "svelte-spa-router";
+  import { onMount } from "svelte";
 
   let games = [];
+  let nextPageUrl = null;
+  let prevPageUrl = null;
+  let currentPage = 1;
 
-  async function fetchGames() {
+  function getUrlForPage(page) {
+    return `https://api.rawg.io/api/games?key=de4d513680fd4e698af5f40511424237&page=${page}`;
+  }
+
+  async function fetchGames(url) {
     try {
-      const response = await fetch(
-        "https://api.rawg.io/api/games?key=de4d513680fd4e698af5f40511424237",
-      );
+      const response = await fetch(url || getUrlForPage(currentPage));
       const data = await response.json();
-      games = data.results.slice(0, 20); // Get first 20 games (4x5)
+      games = data.results.slice(0, 20);
+      nextPageUrl = data.next;
+      prevPageUrl = data.previous;
     } catch (error) {
       console.error("Error fetching games:", error);
     }
   }
 
   function navigateToGameDetail(gameId) {
-    push(`/game/${gameId}`); // Navigate to the game detail page
+    localStorage.setItem("currentPage", currentPage.toString()); // Zapisz stronę przed przejściem
+    push(`/game/${gameId}`);
   }
 
-  fetchGames();
+  function goToNextPage() {
+    if (nextPageUrl) {
+      currentPage++;
+      localStorage.setItem("currentPage", currentPage.toString());
+      fetchGames(nextPageUrl);
+    }
+  }
+
+  function goToPreviousPage() {
+    if (prevPageUrl) {
+      currentPage--;
+      localStorage.setItem("currentPage", currentPage.toString());
+      fetchGames(prevPageUrl);
+    }
+  }
+
+  function goToFirstPage() {
+    currentPage = 1;
+    localStorage.setItem("currentPage", "1");
+    fetchGames();
+  }
+
+  onMount(() => {
+    const savedPage = localStorage.getItem("currentPage");
+    if (savedPage) {
+      currentPage = parseInt(savedPage, 10);
+    }
+    fetchGames();
+  });
 </script>
 
 <main>
@@ -33,6 +70,13 @@
         </div>
       {/each}
     </div>
+  </div>
+
+  <div class="pagination-buttons">
+    <button on:click={goToFirstPage}>First</button>
+    <button on:click={goToPreviousPage} disabled={!prevPageUrl}>Previous</button
+    >
+    <button on:click={goToNextPage} disabled={!nextPageUrl}>Next</button>
   </div>
 </main>
 
@@ -89,5 +133,31 @@
     font-size: 14px;
     text-align: center;
     border-radius: 5px;
+  }
+
+  .pagination-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .pagination-buttons button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+
+  .pagination-buttons button:hover {
+    background-color: #555;
+  }
+
+  .pagination-buttons button:disabled {
+    background-color: #777;
+    cursor: not-allowed;
   }
 </style>

@@ -1,4 +1,6 @@
 <script>
+  import { push } from "svelte-spa-router";
+
   let searchQuery = "";
   let stores = [];
   let genres = [];
@@ -14,13 +16,13 @@
     }
   }
 
-  function searchGames() {
-    if (searchQuery.length > 2) {
-      window.location.href = `https://rawg.io/games?search=${searchQuery}`;
+  function searchGames(event) {
+    if (searchQuery.length > 2 && event.key === "Enter") {
+      push(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   }
 
-  // Fetch data when component is created
+  // Pobieranie danych
   fetchData(
     "https://api.rawg.io/api/stores?key=de4d513680fd4e698af5f40511424237",
     (data) => (stores = data),
@@ -45,7 +47,9 @@
   />
 
   <ul id="nav-list">
-    <!-- Stores Dropdown -->
+    <li class="menu-div">
+      <div class="dropbtn"><a href="../routes/Home.svelte">Home</a></div>
+    </li>
     <li class="menu-div">
       <button class="dropbtn">Stores</button>
       <div class="dropdown-content">
@@ -54,8 +58,6 @@
         {/each}
       </div>
     </li>
-
-    <!-- Genres Dropdown -->
     <li class="menu-div">
       <button class="dropbtn">Genres</button>
       <div class="dropdown-content">
@@ -64,8 +66,6 @@
         {/each}
       </div>
     </li>
-
-    <!-- Platforms Dropdown -->
     <li class="menu-div">
       <button class="dropbtn">Platforms</button>
       <div class="dropdown-content">
