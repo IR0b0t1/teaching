@@ -8,13 +8,11 @@
     let currentPage = 1;
     let searchTerm = "";
 
-    // Funkcja do generowania URL na podstawie strony i zapytania
     function getUrlForPage(page, query = "") {
         const base = `https://api.rawg.io/api/games?key=de4d513680fd4e698af5f40511424237&page=${page}`;
         return query ? `${base}&search=${encodeURIComponent(query)}` : base;
     }
 
-    // Funkcja do pobierania gier w zależności od zapytania
     async function fetchGames(query = "") {
         try {
             const url = getUrlForPage(currentPage, query);
@@ -29,13 +27,11 @@
         }
     }
 
-    // Funkcja do nawigacji do szczegółów gry
     function navigateToGameDetail(gameId) {
         localStorage.setItem("currentPage", currentPage.toString());
         push(`/game/${gameId}`);
     }
 
-    // Funkcja do przechodzenia do następnej strony
     function goToNextPage() {
         if (nextPageUrl) {
             currentPage++;
@@ -44,7 +40,6 @@
         }
     }
 
-    // Funkcja do przechodzenia do poprzedniej strony
     function goToPreviousPage() {
         if (prevPageUrl) {
             currentPage--;
@@ -53,14 +48,12 @@
         }
     }
 
-    // Funkcja do przechodzenia do pierwszej strony
     function goToFirstPage() {
         currentPage = 1;
         localStorage.setItem("currentPage", "1");
         fetchGames(searchTerm);
     }
 
-    // Funkcja do ładowania wyników wyszukiwania
     function loadSearchResults() {
         const hash = window.location.hash;
         const urlParams = new URLSearchParams(hash.split("?")[1]);
