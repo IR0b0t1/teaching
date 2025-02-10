@@ -7,15 +7,23 @@
     let prevPageUrl = null;
     let currentPage = 1;
     let searchTerm = "";
+    let searchType = "";
+    let searchId = "";
+    let searchName = "";
 
-    function getUrlForPage(page, query = "") {
+    function getUrlForPage(page, query = "", type = "", id = "") {
         const base = `https://api.rawg.io/api/games?key=de4d513680fd4e698af5f40511424237&page=${page}`;
-        return query ? `${base}&search=${encodeURIComponent(query)}` : base;
+        if (query) {
+            return `${base}&search=${encodeURIComponent(query)}`;
+        } else if (type && id) {
+            return `${base}&${type}=${id}`;
+        }
+        return base;
     }
 
-    async function fetchGames(query = "") {
+    async function fetchGames(query = "", type = "", id = "") {
         try {
-            const url = getUrlForPage(currentPage, query);
+            const url = getUrlForPage(currentPage, query, type, id);
             const response = await fetch(url);
             const data = await response.json();
 
@@ -24,6 +32,17 @@
             prevPageUrl = data.previous;
         } catch (error) {
             console.error("Error fetching games:", error);
+        }
+    }
+
+    async function fetchName(type, id) {
+        try {
+            const url = `https://api.rawg.io/api/${type}/${id}?key=de4d513680fd4e698af5f40511424237`;
+            const response = await fetch(url);
+            const data = await response.json();
+            searchName = data.name;
+        } catch (error) {
+            console.error("Error fetching name:", error);
         }
     }
 
@@ -36,7 +55,7 @@
         if (nextPageUrl) {
             currentPage++;
             localStorage.setItem("currentPage", currentPage.toString());
-            fetchGames(searchTerm);
+            fetchGames(searchTerm, searchType, searchId);
         }
     }
 
@@ -44,23 +63,38 @@
         if (prevPageUrl) {
             currentPage--;
             localStorage.setItem("currentPage", currentPage.toString());
-            fetchGames(searchTerm);
+            fetchGames(searchTerm, searchType, searchId);
         }
     }
 
     function goToFirstPage() {
         currentPage = 1;
         localStorage.setItem("currentPage", "1");
-        fetchGames(searchTerm);
+        fetchGames(searchTerm, searchType, searchId);
     }
 
     function loadSearchResults() {
         const hash = window.location.hash;
         const urlParams = new URLSearchParams(hash.split("?")[1]);
         searchTerm = urlParams.get("q") || "";
-        if (searchTerm) {
-            fetchGames(searchTerm);
+        searchType = urlParams.get("store")
+            ? "stores"
+            : urlParams.get("genre")
+              ? "genres"
+              : urlParams.get("platform")
+                ? "platforms"
+                : "";
+        searchId =
+            urlParams.get("store") ||
+            urlParams.get("genre") ||
+            urlParams.get("platform") ||
+            "";
+
+        if (searchType && searchId) {
+            fetchName(searchType, searchId);
         }
+
+        fetchGames(searchTerm, searchType, searchId);
     }
 
     onMount(() => {
@@ -75,7 +109,11 @@
 
 <main>
     <h1>
-        {searchTerm ? `Search Results for "${searchTerm}"` : "Popular Games"}
+        {searchTerm
+            ? `Search Results for "${searchTerm}"`
+            : searchType
+              ? `Search Results for ${searchName}`
+              : "Popular Games"}
     </h1>
     <div class="game-preview">
         <div class="game-grid">

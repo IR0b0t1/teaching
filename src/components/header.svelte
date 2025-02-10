@@ -16,13 +16,22 @@
     }
   }
 
-  function searchGames(event) {
-    if (searchQuery.length > 2 && event.key === "Enter") {
+  // Funkcja wyszukiwania gier na podstawie różnych parametrów
+  function searchGames(event, type, id) {
+    event.preventDefault(); // Zatrzymuje domyślne działanie linku (np. przejście do #)
+
+    if (type === "search" && searchQuery.length > 2 && event.key === "Enter") {
       push(`/search?q=${encodeURIComponent(searchQuery)}`);
+    } else if (type === "store") {
+      push(`/search?store=${id}`);
+    } else if (type === "genre") {
+      push(`/search?genre=${id}`);
+    } else if (type === "platform") {
+      push(`/search?platform=${id}`);
     }
   }
 
-  // Pobieranie danych
+  // Pobieranie danych z API
   fetchData(
     "https://api.rawg.io/api/stores?key=de4d513680fd4e698af5f40511424237",
     (data) => (stores = data),
@@ -43,18 +52,22 @@
     id="search-bar"
     placeholder="Search games..."
     bind:value={searchQuery}
-    on:keyup={searchGames}
+    on:keyup={(event) => searchGames(event, "search")}
   />
 
   <ul id="nav-list">
     <li class="menu-div">
-      <div class="dropbtn"><a href="../routes/Home.svelte">Home</a></div>
+      <div class="dropbtn">
+        <button on:click={() => push("/home")}>Home</button>
+      </div>
     </li>
     <li class="menu-div">
       <button class="dropbtn">Stores</button>
       <div class="dropdown-content">
         {#each stores as store}
-          <a href="#" target="_blank">{store.name}</a>
+          <button on:click={(event) => searchGames(event, "store", store.id)}
+            >{store.name}</button
+          >
         {/each}
       </div>
     </li>
@@ -62,7 +75,9 @@
       <button class="dropbtn">Genres</button>
       <div class="dropdown-content">
         {#each genres as genre}
-          <a href="#" target="_blank">{genre.name}</a>
+          <button on:click={(event) => searchGames(event, "genre", genre.id)}
+            >{genre.name}</button
+          >
         {/each}
       </div>
     </li>
@@ -70,7 +85,10 @@
       <button class="dropbtn">Platforms</button>
       <div class="dropdown-content">
         {#each platforms as platform}
-          <a href="#" target="_blank">{platform.name}</a>
+          <button
+            on:click={(event) => searchGames(event, "platform", platform.id)}
+            >{platform.name}</button
+          >
         {/each}
       </div>
     </li>
@@ -125,14 +143,18 @@
     display: block;
   }
 
-  .dropdown-content a {
+  .dropdown-content button {
     padding: 8px;
     display: block;
     color: black;
-    text-decoration: none;
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
   }
 
-  .dropdown-content a:hover {
+  .dropdown-content button:hover {
     background-color: #ddd;
   }
 </style>
