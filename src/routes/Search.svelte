@@ -8,63 +8,73 @@
     let currentPage = 1;
     let searchTerm = "";
 
+    // Funkcja do generowania URL na podstawie strony i zapytania
     function getUrlForPage(page, query = "") {
         const base = `https://api.rawg.io/api/games?key=de4d513680fd4e698af5f40511424237&page=${page}`;
         return query ? `${base}&search=${encodeURIComponent(query)}` : base;
     }
 
-    async function fetchGames(query) {
-        if (!query) return;
+    // Funkcja do pobierania gier w zależności od zapytania
+    async function fetchGames(query = "") {
         try {
-            const response = await fetch(
-                `https://api.rawg.io/api/games?key=de4d513680fd4e698af5f40511424237&search=${encodeURIComponent(query)}`,
-            );
+            const url = getUrlForPage(currentPage, query);
+            const response = await fetch(url);
             const data = await response.json();
-            games = data.results.filter((game) =>
-                game.name.toLowerCase().includes(query.toLowerCase()),
-            );
+
+            games = data.results;
+            nextPageUrl = data.next;
+            prevPageUrl = data.previous;
         } catch (error) {
-            console.error("Error fetching search results:", error);
+            console.error("Error fetching games:", error);
         }
     }
 
+    // Funkcja do nawigacji do szczegółów gry
     function navigateToGameDetail(gameId) {
         localStorage.setItem("currentPage", currentPage.toString());
         push(`/game/${gameId}`);
     }
 
+    // Funkcja do przechodzenia do następnej strony
     function goToNextPage() {
         if (nextPageUrl) {
             currentPage++;
-            fetchGames(nextPageUrl);
+            localStorage.setItem("currentPage", currentPage.toString());
+            fetchGames(searchTerm);
         }
     }
 
+    // Funkcja do przechodzenia do poprzedniej strony
     function goToPreviousPage() {
         if (prevPageUrl) {
             currentPage--;
-            fetchGames(prevPageUrl);
+            localStorage.setItem("currentPage", currentPage.toString());
+            fetchGames(searchTerm);
         }
     }
 
+    // Funkcja do przechodzenia do pierwszej strony
     function goToFirstPage() {
         currentPage = 1;
-        fetchGames(getUrlForPage(1, searchTerm));
+        localStorage.setItem("currentPage", "1");
+        fetchGames(searchTerm);
     }
 
-    // Wczytywanie wyszukiwania
+    // Funkcja do ładowania wyników wyszukiwania
     function loadSearchResults() {
         const hash = window.location.hash;
         const urlParams = new URLSearchParams(hash.split("?")[1]);
-        console.log(urlParams);
         searchTerm = urlParams.get("q") || "";
-        console.log("Loaded search term:", searchTerm);
         if (searchTerm) {
             fetchGames(searchTerm);
         }
     }
 
     onMount(() => {
+        const savedPage = localStorage.getItem("currentPage");
+        if (savedPage) {
+            currentPage = parseInt(savedPage, 10);
+        }
         loadSearchResults();
         window.addEventListener("popstate", loadSearchResults);
     });
