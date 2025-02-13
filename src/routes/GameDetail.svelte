@@ -1,10 +1,12 @@
 <script>
     import { onMount } from "svelte";
     import { push } from "svelte-spa-router";
+    import Chart from "chart.js/auto";
 
     export let params;
 
     let gameDetails = {};
+    let chartInstance = null;
 
     async function fetchGameDetails() {
         try {
@@ -13,8 +15,51 @@
             );
             const data = await response.json();
             gameDetails = data;
+            createChart();
         } catch (error) {
             console.error("Error fetching game details:", error);
+        }
+    }
+
+    function createChart() {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        const canvas = document.getElementById("ratingsChart");
+        if (canvas instanceof HTMLCanvasElement) {
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+                const ratings = gameDetails.ratings || [];
+                const labels = ratings.map((rating) => rating.title);
+                const dataValues = ratings.map((rating) => rating.percent);
+
+                chartInstance = new Chart(ctx, {
+                    type: "pie",
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                data: dataValues,
+                                backgroundColor: [
+                                    "#4caf50",
+                                    "#2196f3",
+                                    "#ffeb3b",
+                                    "#f44336",
+                                ],
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: "bottom",
+                            },
+                        },
+                    },
+                });
+            }
         }
     }
 
@@ -31,9 +76,9 @@
 <main>
     <div class="container">
         <div class="header">
-            <button class="back-button" on:click={goBackToGames}
-                >Back to Games</button
-            >
+            <button class="back-button" on:click={goBackToGames}>
+                Back to Games
+            </button>
             <h1>{gameDetails.name}</h1>
         </div>
         <div>
@@ -55,6 +100,15 @@
             </ul>
             <div class="metacritic">
                 <p>Metacritic score: {gameDetails.metacritic}</p>
+            </div>
+            <canvas id="ratingsChart"></canvas>
+            <div class="requirements">
+                <h3>System Requirements</h3>
+                <p>
+                    {gameDetails.platforms?.find(
+                        (p) => p.platform.slug === "pc",
+                    )?.requirements?.minimum || "No data available"}
+                </p>
             </div>
         </div>
     </div>
@@ -118,5 +172,16 @@
 
     .back-button:hover {
         background-color: #555;
+    }
+
+    canvas {
+        max-width: 400px;
+        margin: 20px auto;
+        display: block;
+    }
+
+    .requirements {
+        text-align: center;
+        margin-top: 20px;
     }
 </style>
