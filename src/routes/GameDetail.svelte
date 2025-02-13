@@ -117,61 +117,97 @@
 <style>
     main {
         text-align: left;
-        background-color: #111;
-        color: white;
+        background: linear-gradient(to right, #1b2838, #0f1722);
+        color: #dcdcdc;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
 
     .header {
         position: relative;
         padding: 20px 0;
-    }
-
-    h1 {
-        font-size: 40px;
-        font-family: "Courier New", Courier, monospace;
         text-align: center;
     }
 
-    .game-data {
-        display: flex;
-    }
-
-    .description-p {
-        width: 50%;
-        font-family: "Courier New", Courier, monospace;
-        padding: 20px;
-    }
-
-    img {
-        width: 50%;
-        height: 50%;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    li {
-        margin: 5px 0;
+    h1 {
+        font-size: 36px;
+        font-family: "Arial Black", sans-serif;
+        color: #66c0f4;
     }
 
     .back-button {
         display: block;
-        padding: 10px 20px;
-        background-color: #333;
-        color: white;
+        padding: 12px 24px;
+        background: #66c0f4;
+        color: #1b2838;
         border: none;
         border-radius: 5px;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background 0.3s ease-in-out;
+        font-weight: bold;
         position: absolute;
         left: 0;
         top: 20px;
     }
 
     .back-button:hover {
-        background-color: #555;
+        background: #88d5ff;
+    }
+
+    .game-data {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    .description-p {
+        width: 50%;
+        padding: 20px;
+        line-height: 1.5;
+        font-size: 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+    }
+
+    img {
+        width: 50%;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+
+    li {
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        margin: 5px 0;
+    }
+
+    .metacritic {
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 10px;
+        margin-top: 20px;
+        background: #66c0f4;
+        color: #1b2838;
+        border-radius: 5px;
+        display: inline-block;
     }
 
     canvas {
@@ -183,5 +219,12 @@
     .requirements {
         text-align: center;
         margin-top: 20px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+    }
+
+    .requirements h3 {
+        color: #66c0f4;
     }
 </style>
