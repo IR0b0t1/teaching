@@ -24,7 +24,7 @@
   }
 
   function navigateToGameDetail(gameId) {
-    localStorage.setItem("currentPage", currentPage.toString()); // Zapisz stronę przed przejściem
+    localStorage.setItem("currentPage", currentPage.toString());
     push(`/game/${gameId}`);
   }
 

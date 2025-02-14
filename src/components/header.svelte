@@ -16,9 +16,8 @@
     }
   }
 
-  // Funkcja wyszukiwania gier na podstawie różnych parametrów
   function searchGames(event, type, id) {
-    event.preventDefault(); // Zatrzymuje domyślne działanie linku (np. przejście do #)
+    event.preventDefault();
 
     if (type === "search" && searchQuery.length > 2 && event.key === "Enter") {
       push(`/search?q=${encodeURIComponent(searchQuery)}`);
@@ -31,18 +30,17 @@
     }
   }
 
-  // Pobieranie danych z API
   fetchData(
     "https://api.rawg.io/api/stores?key=de4d513680fd4e698af5f40511424237",
-    (data) => (stores = data),
+    (data) => (stores = data)
   );
   fetchData(
     "https://api.rawg.io/api/genres?key=de4d513680fd4e698af5f40511424237",
-    (data) => (genres = data),
+    (data) => (genres = data)
   );
   fetchData(
-    "https://api.rawg.io/api/platforms/lists/parents?key=de4d513680fd4e698af5f40511424237",
-    (data) => (platforms = data),
+    "https://api.rawg.io/api/platforms?key=de4d513680fd4e698af5f40511424237",
+    (data) => (platforms = data)
   );
 </script>
 
