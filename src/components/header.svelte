@@ -56,7 +56,7 @@
   <ul id="nav-list">
     <li class="menu-div">
       <div class="dropbtn">
-        <button on:click={() => push("/")}>Home</button>
+        <button class="home home-btn" on:click={() => push("/")}>Home</button>
       </div>
     </li>
     <li class="menu-div">
@@ -148,6 +148,20 @@
     transform: scale(1.05);
   }
 
+  .home-btn {
+    width: 100%;
+    height: 100%;
+    display: flex;
+  }
+
+  .home {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .dropbtn:active {
     transform: scale(0.95);
   }
@@ -193,5 +207,10 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  .home {
+    width: 100%;
+    height: 100%;
   }
 </style>
